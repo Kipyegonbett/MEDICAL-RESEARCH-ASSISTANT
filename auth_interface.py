@@ -160,7 +160,7 @@ def login_page(db):
             else:
                 st.warning("Please enter both email and password")
     
-    # Registration link
+    # Registration link - MOVED OUTSIDE THE FORM
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("📝 Don't have an account? Register here", use_container_width=True):
@@ -194,12 +194,11 @@ def registration_page(db):
                 if success:
                     st.success(message)
                     st.info("You will be notified when admin approves your account.")
-                    if st.button("Back to Login"):
-                        st.session_state.show_registration = False
-                        st.rerun()
+                    # Don't auto-redirect, let user click back button
                 else:
                     st.error(message)
     
+    # Back to Login button - MOVED OUTSIDE THE FORM
     if st.button("← Back to Login"):
         st.session_state.show_registration = False
         st.rerun()
