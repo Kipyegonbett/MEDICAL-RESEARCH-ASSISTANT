@@ -1,0 +1,39 @@
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Model files (optional - if you want to store them in GitHub, remove these lines)
+*.pt
+*.pth
+*.pickle
+*.pkl
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Environment variables
+.env
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Logs
+*.log
