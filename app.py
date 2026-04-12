@@ -10,5 +10,4 @@ st.set_page_config(
 )
 
 # Run the authentication interface
-if __name__ == "__main__":
-    main_auth_interface()
+main_auth_interface()
