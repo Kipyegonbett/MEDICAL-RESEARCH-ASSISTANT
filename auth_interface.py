@@ -62,13 +62,29 @@ QUICK_EXAMPLES = {
 def download_files():
     if not os.path.exists(CHECKPOINT):
         with st.spinner('Downloading model weights — please wait...'):
-            url = f'https://drive.google.com/uc?id={MODEL_FILE_ID}&export=download&confirm=t'
-            gdown.download(url, CHECKPOINT, quiet=False, fuzzy=True)
+            try:
+                gdown.download(
+                    id=MODEL_FILE_ID,
+                    output=CHECKPOINT,
+                    quiet=False,
+                    fuzzy=True
+                )
+            except Exception as e:
+                st.error(f"❌ Failed to download model weights: {e}")
+                st.stop()
 
     if not os.path.exists(ENCODER):
         with st.spinner('Downloading label encoder...'):
-            url = f'https://drive.google.com/uc?id={ENCODER_FILE_ID}&export=download&confirm=t'
-            gdown.download(url, ENCODER, quiet=False, fuzzy=True)
+            try:
+                gdown.download(
+                    id=ENCODER_FILE_ID,
+                    output=ENCODER,
+                    quiet=False,
+                    fuzzy=True
+                )
+            except Exception as e:
+                st.error(f"❌ Failed to download label encoder: {e}")
+                st.stop()
 
 # ── Load model ─────────────────────────────────────────────────────────────────
 @st.cache_resource
@@ -160,7 +176,6 @@ def login_page(db):
             else:
                 st.warning("Please enter both email and password")
     
-    # Registration link - MOVED OUTSIDE THE FORM
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("📝 Don't have an account? Register here", use_container_width=True):
@@ -194,18 +209,15 @@ def registration_page(db):
                 if success:
                     st.success(message)
                     st.info("You will be notified when admin approves your account.")
-                    # Don't auto-redirect, let user click back button
                 else:
                     st.error(message)
     
-    # Back to Login button - MOVED OUTSIDE THE FORM
     if st.button("← Back to Login"):
         st.session_state.show_registration = False
         st.rerun()
 
 def user_icd11_interface():
     """Your complete ICD-11 classifier interface"""
-    # Load the model
     download_files()
     
     with st.spinner('Loading BioBERT model...'):
@@ -215,17 +227,15 @@ def user_icd11_interface():
         except Exception as e:
             model_loaded = False
             model_error = str(e)
+            st.error(f"❌ Model loading failed: {model_error}")
     
-    # Sidebar with user info
     with st.sidebar:
         st.markdown(f"### 👤 User: {st.session_state.user_name}")
         st.markdown(f"📧 {st.session_state.user_email}")
         st.divider()
     
-    # Your existing CSS (keeping all your styles)
     st.markdown("""
     <style>
-        /* Hero banner */
         .hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 2.5rem 2rem;
@@ -318,7 +328,6 @@ def user_icd11_interface():
     </style>
     """, unsafe_allow_html=True)
     
-    # Hero banner
     st.markdown("""
     <div class="hero">
         <h1>🏥 Medical Notes ICD-11 Classifier</h1>
@@ -326,22 +335,18 @@ def user_icd11_interface():
     </div>
     """, unsafe_allow_html=True)
     
-    # Main interface columns
     left_col, right_col = st.columns([3, 2])
     
     with left_col:
         st.markdown('<div class="section-header">📄 Input Medical Notes</div>', unsafe_allow_html=True)
         
-        # Quick example selector
         selected_example = st.selectbox(
             'Quick Examples',
             ['Select an example...'] + list(QUICK_EXAMPLES.keys())
         )
         
-        # File upload
         uploaded_txt = st.file_uploader('Or upload a TXT file', type=['txt'])
         
-        # Determine default text
         default_text = ''
         if selected_example != 'Select an example...':
             default_text = QUICK_EXAMPLES[selected_example]
@@ -364,7 +369,6 @@ def user_icd11_interface():
         if clear_btn:
             st.rerun()
         
-        # How to use
         st.divider()
         with st.expander('📖 How to Use', expanded=True):
             steps = [
@@ -449,7 +453,6 @@ def user_icd11_interface():
         else:
             st.info('Enter a clinical note and click **Classify Notes** to see the result here.')
     
-    # Batch processing section
     st.divider()
     st.markdown('<div class="section-header">📋 Batch Processing</div>', unsafe_allow_html=True)
     
@@ -525,14 +528,12 @@ def user_icd11_interface():
             except Exception as e:
                 st.error(f'Error: {e}')
     
-    # Footer
     st.divider()
     st.markdown(
         '<center><small>ICD-11 Chapter Classifier — BioBERT fine-tuned — For research and educational use only</small></center>',
         unsafe_allow_html=True
     )
     
-    # Logout button
     if st.sidebar.button("🚪 Logout", use_container_width=True):
         for key in ['logged_in', 'user_email', 'user_name', 'user_role', 'user_id']:
             if key in st.session_state:
@@ -628,7 +629,6 @@ def admin_panel(db):
         with col4:
             st.metric("Admins", admin_count)
     
-    # Logout button
     if st.sidebar.button("🚪 Logout", use_container_width=True):
         for key in ['logged_in', 'user_email', 'user_name', 'user_role', 'user_id']:
             if key in st.session_state:
